@@ -43,34 +43,6 @@ namespace CourseProject.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]Authenticate model)
         {
-            // User authedUser = new User();
-            // // var user = _userService.Authenticate(model.Email, model.Password);
-            // if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
-            //     //return null;
-            //     authedUser = null;
-            // //return BadRequest(new { message = "Username or password is incorrect" });
-
-
-            // var user = _context.Users.SingleOrDefault(x => x.Email == model.Email);
-
-            // // check if username exists
-            // if (user == null)
-            //     // return null;
-            //     authedUser = null;
-
-            // // check if password is correct
-            // if (!VerifyPasswordHash(model.Password, user.PasswordHash, user.PasswordSalt))
-            //     // return null;
-            //     authedUser = null;
-
-            // // authentication successful
-            // //return user;
-
-
-            // ////////////////////////////////
-            // if (authedUser == null)
-            //     return BadRequest(new { message = "Username or password is incorrect" });
-
             var user = Authenticate(model.Email, model.Password);
 
             if (user == null)
@@ -159,12 +131,14 @@ namespace CourseProject.Controllers
                 return NotFound();
             }
 
-            return user;
+
+            List<object> list = new List<object>();
+            list.Add(new { user, message = "Authorized" });
+            
+            return Ok(list);
         }
 
         // PUT: api/Users/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
@@ -194,17 +168,7 @@ namespace CourseProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.UserId }, user);
-        }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
@@ -230,6 +194,15 @@ namespace CourseProject.Controllers
 
 
 
+
+        /* ** HELP METHODS ** */
+
+        /*
+        ** Authenticate to Authenticate a user
+        ** <params> string email, string password
+        ** returns null if not passed the auth
+        ** returns the user if passed the auth
+        */
         public User Authenticate(string email, string password)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
@@ -249,9 +222,11 @@ namespace CourseProject.Controllers
             return user;
         }
 
-
-
-
+        /*
+        ** CreatePasswordHash to create a hashed and salted password
+        ** <params> string password
+        ** returns passwordHash and passwordSalt
+        */
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             if (password == null) throw new ArgumentNullException("password");
@@ -264,6 +239,12 @@ namespace CourseProject.Controllers
             }
         }
 
+        /*
+        ** VerifyPasswordHash to compare input password with stored hashedPassword and stored saltedPassword
+        ** <params> string password, byte[] storedHash, byte[] storedSalt
+        ** returns false if password is not comparable with hashedPassword or saltedPassword
+        ** returns true if correct password
+        */
         private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
             if (password == null) throw new ArgumentNullException("password");
@@ -286,6 +267,13 @@ namespace CourseProject.Controllers
 
 
     }
+
+
+    // public class Test
+    // {
+    //     public string firstMsg { get; set; }
+    //     public string secondMsg { get; set; }
+    // }
 }
 
 

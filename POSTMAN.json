@@ -1,0 +1,33 @@
+{
+	"UserId": 5,
+	"Quiz": {
+		"Title": "Testtitel",
+		"Description": "Detta är mitt första quiz om React"
+	},
+	"Question": [
+		{
+			"QuestionText": "Vad är React?",
+			"CorrectAnswer": "Ett bibliotek",
+			"AlternativOne": "Ramverk",
+			"AlternativTwo": "Bibliotek",
+			"AlternativThree": "En webbläsare",
+			"AlternativFour": "Ett operativsystem"
+		},
+		{
+			"QuestionText": "Vad är Facebook?",
+			"CorrectAnswer": "En social media-sida",
+			"AlternativOne": "En social media-sida",
+			"AlternativTwo": "En cykel",
+			"AlternativThree": "En bil",
+			"AlternativFour": "En maträtt"
+		},
+		{
+			"QuestionText": "Vad är Baui?",
+			"CorrectAnswer": "En hund",
+			"AlternativOne": "En katt",
+			"AlternativTwo": "En kanin",
+			"AlternativThree": "En hamster",
+			"AlternativFour": "En hund"
+		}
+		]
+}
