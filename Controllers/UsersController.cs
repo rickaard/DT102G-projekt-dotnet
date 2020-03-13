@@ -33,12 +33,16 @@ namespace CourseProject.Controllers
         {
             _context = context;
             _appSettings = appSettings.Value;
-            // _userService = userService;
         }
 
 
 
-        // Authenticate a user
+
+        /** POST: api/users/authenticate **  
+        * @desc: authenticates a user and then createas a JSON web token
+        * @params: model Authenticate(string Email, string Password) 
+        * @returns: Status Code 400 - Error message / Status Code 200 - the authenticated User with created token
+        */
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]Authenticate model)
@@ -72,16 +76,22 @@ namespace CourseProject.Controllers
             });
         }
 
+
+        /** POST: api/users/register **  
+        * @desc: registers a new user - hashes and salts the inputted password - saves to DB
+        * @params: model Register(string Name, string Email, string Password) - the model to be used
+        * @returns: status 400 and error msg / status 200 and info about the created user as JSON object
+        */
         [AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register([FromBody]Register model)
         {
             // validation
             if (string.IsNullOrWhiteSpace(model.Password))
-                return BadRequest(new { message = "Password is required" });
+                return BadRequest(new { stauts = "error", message = "Password is required" });
 
             if (_context.Users.Any(x => x.Email == model.Email))
-                return BadRequest(new { message = "Username \"" + model.Email + "\" is already taken" });
+                return BadRequest(new { stauts = "error", message = "Email \"" + model.Email + "\" is already taken" });
 
 
             byte[] passwordHash, passwordSalt;
@@ -96,7 +106,14 @@ namespace CourseProject.Controllers
             _context.Users.Add(user);
             _context.SaveChanges();
             var latestId = user.UserId;
-            return Ok(user); // <------ ÄNDRA DETTA MEDDELANDE
+
+            return Ok(new
+            {
+                status = "success",
+                message = "New user created",
+                Name = user.Name,
+                Email = user.Email
+            });
         }
 
 
@@ -104,87 +121,106 @@ namespace CourseProject.Controllers
 
 
 
-
-
-
-
-
-
-
-
-        // GET: api/Users
-        [AllowAnonymous]
+        /** GET: api/Users **  
+        * @desc: Fetches all users from DB, includes the user's Quizzes (if has any, otherwise empty array)
+        * @params: 
+        * @returns: Reterns a list of all the users (userid, email and quizzes (if any) )
+        */
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _context.Users
+                .Include(u => u.Quiz)
+                .Select(u => new { u.UserId, u.Name, u.Email, u.Quiz })
+                .ToListAsync();
+
+            return Ok(users);
         }
 
-        // GET: api/Users/5
+        /* GET: api/Users/1 *
+        * @desc: Fetches specific user from DB, includes the user's Quizzes (if has any, otherwise empty array)
+        * @params: int id, the user Id
+        * @returns: Status code 404 if not found / otherwise a list of the user (userid, email and quizzes (if any) )
+        */
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users
+                            .Select(u => new { u.UserId, u.Name, u.Email })
+                            .FirstOrDefaultAsync(u => u.UserId == id);
 
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new { status = "error", message = "No user with that ID found" });
             }
 
+            var quiz = await _context.Quiz
+                        .Include(q => q.Questions)
+                        .Where(q => q.UserId == id)
+                        .Select(q => new { q.QuizId, q.Title, q.Description, q.Questions })
+                        .ToListAsync();
 
-            List<object> list = new List<object>();
-            list.Add(new { user, message = "Authorized" });
-            
-            return Ok(list);
+            return Ok(new
+            {
+                user.UserId,
+                user.Name,
+                user.Email,
+                quiz
+            });
         }
+
+
+
 
         // PUT: api/Users/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
-        {
-            if (id != user.UserId)
-            {
-                return BadRequest();
-            }
+        // [HttpPut("{id}")]
+        // public async Task<IActionResult> PutUser(int id, User user)
+        // {
+        //     if (id != user.UserId)
+        //     {
+        //         return BadRequest();
+        //     }
 
-            _context.Entry(user).State = EntityState.Modified;
+        //     _context.Entry(user).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //     try
+        //     {
+        //         await _context.SaveChangesAsync();
+        //     }
+        //     catch (DbUpdateConcurrencyException)
+        //     {
+        //         if (!UserExists(id))
+        //         {
+        //             return NotFound();
+        //         }
+        //         else
+        //         {
+        //             throw;
+        //         }
+        //     }
 
-            return NoContent();
-        }
+        //     return NoContent();
+        // }
 
 
 
         // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+        // [HttpDelete("{id}")]
+        // public async Task<ActionResult<User>> DeleteUser(int id)
+        // {
+        //     var user = await _context.Users.FindAsync(id);
+        //     if (user == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+        //     _context.Users.Remove(user);
+        //     await _context.SaveChangesAsync();
 
-            return user;
-        }
+        //     return user;
+        // }
+
+
 
         private bool UserExists(int id)
         {
@@ -195,13 +231,14 @@ namespace CourseProject.Controllers
 
 
 
-        /* ** HELP METHODS ** */
+        /* ** HELPER METHODS ** */
+
+
 
         /*
-        ** Authenticate to Authenticate a user
-        ** <params> string email, string password
-        ** returns null if not passed the auth
-        ** returns the user if passed the auth
+        * @desc: authenticates a user login attempt - check if user email exists in DB and then verifies password 
+        * @params: string email, string password 
+        * @returns: null if not passed auth / the user object if passed auth
         */
         public User Authenticate(string email, string password)
         {
@@ -222,10 +259,12 @@ namespace CourseProject.Controllers
             return user;
         }
 
+
+
         /*
-        ** CreatePasswordHash to create a hashed and salted password
-        ** <params> string password
-        ** returns passwordHash and passwordSalt
+        * @desc: creates a hashed and salted password
+        * @params: string password - the inputted password that needs to be hashed
+        * @returns: hashed and salted password
         */
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -239,11 +278,12 @@ namespace CourseProject.Controllers
             }
         }
 
+
+
         /*
-        ** VerifyPasswordHash to compare input password with stored hashedPassword and stored saltedPassword
-        ** <params> string password, byte[] storedHash, byte[] storedSalt
-        ** returns false if password is not comparable with hashedPassword or saltedPassword
-        ** returns true if correct password
+        * @desc: verifies password - compares the input password to the hashed and salted passwords
+        * @params: string password - the input password to be compared with
+        * @returns: falses if not passed verification / true if passed
         */
         private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
@@ -269,11 +309,7 @@ namespace CourseProject.Controllers
     }
 
 
-    // public class Test
-    // {
-    //     public string firstMsg { get; set; }
-    //     public string secondMsg { get; set; }
-    // }
+
 }
 
 

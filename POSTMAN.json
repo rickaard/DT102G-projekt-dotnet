@@ -1,33 +1,74 @@
 {
-	"UserId": 5,
+"AddQuiz": 
+{
+	"UserId": 2,
 	"Quiz": {
-		"Title": "Testtitel",
-		"Description": "Detta är mitt första quiz om React"
+		"Title": "Jule-quiz",
+		"Description": "Ett quiz om julen"
 	},
 	"Question": [
 		{
-			"QuestionText": "Vad är React?",
-			"CorrectAnswer": "Ett bibliotek",
-			"AlternativOne": "Ramverk",
-			"AlternativTwo": "Bibliotek",
-			"AlternativThree": "En webbläsare",
-			"AlternativFour": "Ett operativsystem"
-		},
-		{
-			"QuestionText": "Vad är Facebook?",
-			"CorrectAnswer": "En social media-sida",
-			"AlternativOne": "En social media-sida",
-			"AlternativTwo": "En cykel",
-			"AlternativThree": "En bil",
-			"AlternativFour": "En maträtt"
-		},
-		{
-			"QuestionText": "Vad är Baui?",
-			"CorrectAnswer": "En hund",
-			"AlternativOne": "En katt",
-			"AlternativTwo": "En kanin",
-			"AlternativThree": "En hamster",
+			"QuestionText": "Vad är Corona?",
+			"CorrectAnswer": "Ett virus",
+			"AlternativOne": "Ett virus",
+			"AlternativTwo": "En bakterie",
+			"AlternativThree": "En bajsklutt",
 			"AlternativFour": "En hund"
+		},
+		{
+			"QuestionText": "Vilken öl är godast?",
+			"CorrectAnswer": "White Horse",
+			"AlternativOne": "Norrlands guld",
+			"AlternativTwo": "White Horse",
+			"AlternativThree": "Svensk starköl",
+			"AlternativFour": "Tuborg"
 		}
-		]
+	]
+},
+
+"UpdateQuiz": 
+{
+    "quizId": 1,
+    "title": "Testtitel - 2222 UPPDATERAD TAGIT BORT EN FRÅGA",
+    "description": "Detta är mitt första quiz om React",
+    "questions": [
+        {
+            "questionId": 1,
+            "questionText": "Vad är React - NYUPPDATERAD",
+            "correctAnswer": "Ett bibliotek",
+            "alternativOne": "Ramverkkkkk",
+            "alternativTwo": "Bibliotek",
+            "alternativThree": "En webbläsare",
+            "alternativFour": "Ett operativsystem"
+        },
+        {
+            "questionId": 2,
+            "questionText": "Vad är Facebook 2? - NYUPPDATERAD",
+            "correctAnswer": "En social media-sida",
+            "alternativOne": "En social media-sida",
+            "alternativTwo": "En cykel",
+            "alternativThree": "En bil",
+            "alternativFour": "En maträtt"
+        },
+        {
+            "questionId": 3,
+            "questionText": "Vad är Baui????? - NYUPPDATERAD",
+            "correctAnswer": "En hund",
+            "alternativOne": "En katt",
+            "alternativTwo": "En kanin",
+            "alternativThree": "En hamster",
+            "alternativFour": "En hund"
+        },
+        {
+        	"questionid": 44,
+            "questionText": "Vad är 1+1?",
+            "correctAnswer": "2",
+            "alternativOne": "3",
+            "alternativTwo": "2",
+            "alternativThree": "0",
+            "alternativFour": "5"
+        }
+    ],
+    "userId": 1
+}
 }

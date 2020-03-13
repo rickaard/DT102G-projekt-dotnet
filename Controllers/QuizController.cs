@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CourseProject.Data;
 using CourseProject.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CourseProject.Controllers
 {
@@ -21,16 +22,27 @@ namespace CourseProject.Controllers
             _context = context;
         }
 
-        // GET: api/Quiz
+        /** GET: api/Quiz/ **  
+        * @desc: Fetches every Quiz with related Questions from DB
+        * @params: 
+        * @returns: Every Quiz with related Questions as JSON object
+        */
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Quiz>>> GetQuiz()
         {
-            return await _context.Quiz
+            var quizzes = await _context.Quiz
                 .Include(q => q.Questions)
+                .Select(q => new { q.QuizId, q.Title, q.Description, q.Questions, q.UserId })
                 .ToListAsync();
+
+            return Ok(quizzes);
         }
 
-        // GET: api/Quiz/5
+        /** GET: api/Quiz/5 **  
+        * @desc: Fetches specific quiz and includes related Questions from DB
+        * @params: int id - the specific QuizId
+        * @returns: Either Status Code 404 / Status Code 200 with correct Quiz as JSON obj
+        */
         [HttpGet("{id}")]
         public async Task<ActionResult<Quiz>> GetQuiz(int id)
         {
@@ -40,41 +52,43 @@ namespace CourseProject.Controllers
 
             if (quiz == null)
             {
-                return NotFound();
+                return NotFound(new { status = "error", message = "No quiz with that ID found" });
             }
 
-            return quiz;
+            var questions = await _context.Question
+                            .Where(q => q.QuizId == id)
+                            .Select(q => new { q.QuizId, q.QuestionId, q.QuestionText, q.CorrectAnswer, q.AlternativOne, q.AlternativTwo, q.AlternativThree, q.AlternativFour })
+                            .ToListAsync();
+
+
+            return Ok(new
+            {
+                quiz.QuizId,
+                quiz.UserId,
+                quiz.Title,
+                quiz.Description,
+                questions
+            });
+
         }
 
-        // GET: api/quiz/questions/1
-        // [HttpGet("questions/{quizId}")]
-        // public async Task<ActionResult<Quiz>> GetQuestions(int quizId)
-        // {
-        //     var quiz = await _context.Quiz
-        //         .FirstOrDefaultAsync(q => q.QuizId == quizId);
 
-        //     if (quiz == null)
-        //     {
-        //         return NotFound();
-        //     }
 
-        //     var questions = await _context.Question
-        //         .Where(q => q.QuizId == quizId)
-        //         .ToListAsync();
-
-        //     return quiz;
-        // }
-
-        // PUT: api/Quiz/5
+        /** PUT: api/Quiz/5 **  
+        * @desc: Updates a specific quiz and the questions related to it
+        * @params: int id, Quiz quiz - id of the quiz and Quiz model
+        * @returns: Status code 400 if wrong ID / Status code of 204 if successfull 
+        */
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutQuiz(int id, Quiz quiz)
         {
             if (id != quiz.QuizId)
             {
-                return BadRequest();
+                return BadRequest(new { message = "fel quiz id" }); 
             }
 
-            _context.Entry(quiz).State = EntityState.Modified;
+            _context.Update(quiz);
 
             try
             {
@@ -97,11 +111,11 @@ namespace CourseProject.Controllers
 
 
         /** POST: api/Quiz **  
-        ** method PostQuiz
-        ** <params>: AddQuiz model
-        ** <task>: Add's new objects to DB
-        ** <returns>: Message OK and created object
+        * @desc: Add's new entries in DB - a new Quiz and Questions related to that Quiz
+        * @params: model AddQuiz - the model to be used 
+        * @returns: 202 status code and JSON object  
         */
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Quiz>> PostQuiz(AddQuiz quiz)
         {
@@ -129,28 +143,44 @@ namespace CourseProject.Controllers
             _context.Quiz.Add(theQuiz);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "OK", theQuiz });
+            return Ok(new
+            {
+                status = "success",
+                message = "New quiz created!",
+                quizId = theQuiz.QuizId,
+                title = theQuiz.Title,
+                description = theQuiz.Description
+            });
         }
 
 
 
 
-
-
-        // DELETE: api/Quiz/5
+        /** DELETE: api/Quiz/5 **  
+        * @desc: Delete specific Quiz with related Questions from DB
+        * @params: int id - ID on the Quiz to be deleted
+        * @returns: JSON object and status code 200
+        */
+        [Authorize] 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Quiz>> DeleteQuiz(int id)
         {
             var quiz = await _context.Quiz.FindAsync(id);
             if (quiz == null)
             {
-                return NotFound();
+                return NotFound(new { status = "error", message = "No quiz with that ID found" });
             }
 
             _context.Quiz.Remove(quiz);
             await _context.SaveChangesAsync();
 
-            return quiz;
+            return Ok(new
+            {
+                status = "success",
+                message = "Quiz has been deleted",
+                quiz.QuizId,
+                quiz.Title
+            });
         }
 
         private bool QuizExists(int id)

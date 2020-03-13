@@ -80,23 +80,6 @@ namespace CourseProject.Migrations
                     b.ToTable("Quiz");
                 });
 
-            modelBuilder.Entity("CourseProject.Models.TodoItem", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsComplete")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TodoItems");
-                });
-
             modelBuilder.Entity("CourseProject.Models.User", b =>
                 {
                     b.Property<int>("UserId")
