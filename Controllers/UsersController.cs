@@ -50,7 +50,7 @@ namespace CourseProject.Controllers
             var user = Authenticate(model.Email, model.Password);
 
             if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return BadRequest(new { status = "error", message = "Username or password is incorrect" });
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -69,6 +69,7 @@ namespace CourseProject.Controllers
             // return basic user info and authentication token
             return Ok(new
             {
+                status = "success",
                 Id = user.UserId,
                 Name = user.Name,
                 Email = user.Email,
@@ -88,10 +89,10 @@ namespace CourseProject.Controllers
         {
             // validation
             if (string.IsNullOrWhiteSpace(model.Password))
-                return BadRequest(new { stauts = "error", message = "Password is required" });
+                return BadRequest(new { status = "error", message = "Password is required" });
 
             if (_context.Users.Any(x => x.Email == model.Email))
-                return BadRequest(new { stauts = "error", message = "Email \"" + model.Email + "\" is already taken" });
+                return BadRequest(new { status = "error", message = "Email \"" + model.Email + "\" is already taken" });
 
 
             byte[] passwordHash, passwordSalt;
