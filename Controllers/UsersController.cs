@@ -118,14 +118,10 @@ namespace CourseProject.Controllers
         }
 
 
-
-
-
-
         /** GET: api/Users **  
         * @desc: Fetches all users from DB, includes the user's Quizzes (if has any, otherwise empty array)
         * @params: 
-        * @returns: Reterns a list of all the users (userid, email and quizzes (if any) )
+        * @returns: Returns a list of all the users (userid, email and quizzes (if any) )
         */
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()

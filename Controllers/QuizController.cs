@@ -32,11 +32,13 @@ namespace CourseProject.Controllers
         {
             var quizzes = await _context.Quiz
                 .Include(q => q.Questions)
-                .Select(q => new { q.QuizId, q.Title, q.Description, q.Questions, q.UserId })
+                .Include(u => u.User)
+                .Select(q => new { q.QuizId, q.Title, q.Description, q.Questions, q.UserId, q.User.Name})
                 .ToListAsync();
 
             return Ok(quizzes);
         }
+
 
         /** GET: api/Quiz/5 **  
         * @desc: Fetches specific quiz and includes related Questions from DB
