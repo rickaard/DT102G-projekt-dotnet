@@ -30,13 +30,22 @@ namespace CourseProject.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Quiz>>> GetQuiz()
         {
-            var quizzes = await _context.Quiz
+            try
+            {
+                var quizzes = await _context.Quiz
                 .Include(q => q.Questions)
                 .Include(u => u.User)
-                .Select(q => new { q.QuizId, q.Title, q.Description, q.Questions, q.UserId, q.User.Name})
+                .Select(q => new { q.QuizId, q.Title, q.Description, q.Questions, q.UserId, q.User.Name })
                 .ToListAsync();
 
-            return Ok(quizzes);
+                return Ok(quizzes);
+            }
+            catch (Exception error)
+            {
+
+                return BadRequest(new { message = error });
+            }
+
         }
 
 
@@ -87,7 +96,7 @@ namespace CourseProject.Controllers
         {
             if (id != quiz.QuizId)
             {
-                return BadRequest(new { message = "fel quiz id" }); 
+                return BadRequest(new { message = "fel quiz id" });
             }
 
             _context.Update(quiz);
@@ -163,7 +172,7 @@ namespace CourseProject.Controllers
         * @params: int id - ID on the Quiz to be deleted
         * @returns: JSON object and status code 200
         */
-        [Authorize] 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Quiz>> DeleteQuiz(int id)
         {

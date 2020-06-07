@@ -45,7 +45,7 @@ namespace CourseProject.Controllers
         */
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]Authenticate model)
+        public IActionResult Authenticate([FromBody] Authenticate model)
         {
             var user = Authenticate(model.Email, model.Password);
 
@@ -85,7 +85,7 @@ namespace CourseProject.Controllers
         */
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult Register([FromBody]Register model)
+        public IActionResult Register([FromBody] Register model)
         {
             // validation
             if (string.IsNullOrWhiteSpace(model.Password))
@@ -165,59 +165,6 @@ namespace CourseProject.Controllers
                 quiz
             });
         }
-
-
-
-
-        // PUT: api/Users/5
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> PutUser(int id, User user)
-        // {
-        //     if (id != user.UserId)
-        //     {
-        //         return BadRequest();
-        //     }
-
-        //     _context.Entry(user).State = EntityState.Modified;
-
-        //     try
-        //     {
-        //         await _context.SaveChangesAsync();
-        //     }
-        //     catch (DbUpdateConcurrencyException)
-        //     {
-        //         if (!UserExists(id))
-        //         {
-        //             return NotFound();
-        //         }
-        //         else
-        //         {
-        //             throw;
-        //         }
-        //     }
-
-        //     return NoContent();
-        // }
-
-
-
-        // DELETE: api/Users/5
-        // [HttpDelete("{id}")]
-        // public async Task<ActionResult<User>> DeleteUser(int id)
-        // {
-        //     var user = await _context.Users.FindAsync(id);
-        //     if (user == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     _context.Users.Remove(user);
-        //     await _context.SaveChangesAsync();
-
-        //     return user;
-        // }
-
-
 
         private bool UserExists(int id)
         {

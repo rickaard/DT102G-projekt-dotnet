@@ -42,8 +42,10 @@ namespace CourseProject
             );
             //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            services.AddDbContext<CourseProjectContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("CourseProjectContext")));
+            // services.AddDbContext<CourseProjectContext>(options =>
+            //     options.UseSqlite(Configuration.GetConnectionString("CourseProjectContext")));
+            services.AddDbContext<CourseProjectContext>(options => 
+                options.UseSqlServer(Configuration.GetConnectionString("CourseProjectContext")));
 
 
             services.AddScoped<IUserService, UserService>();

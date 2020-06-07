@@ -12,7 +12,7 @@ namespace CourseProject.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     PasswordHash = table.Column<byte[]>(nullable: true),
@@ -28,7 +28,7 @@ namespace CourseProject.Migrations
                 columns: table => new
                 {
                     QuizId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: false),
                     UserId = table.Column<int>(nullable: false)
@@ -49,7 +49,7 @@ namespace CourseProject.Migrations
                 columns: table => new
                 {
                     QuestionId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     QuestionText = table.Column<string>(nullable: false),
                     CorrectAnswer = table.Column<string>(nullable: false),
                     AlternativOne = table.Column<string>(nullable: false),
